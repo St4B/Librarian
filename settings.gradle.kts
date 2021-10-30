@@ -6,4 +6,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "AssertPage"
-include(":app")
+include(":app", ":paging-test-util")
