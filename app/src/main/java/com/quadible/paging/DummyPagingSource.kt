@@ -3,7 +3,12 @@ package com.quadible.paging
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 
-class DummyPagingSource(private val pageSize: Int) : PagingSource<Int, DummyData>() {
+class DummyPagingSource(
+    private val pageSize: Int,
+    private val order: OrderMode = OrderMode.ASC
+) : PagingSource<Int, DummyData>() {
+
+    enum class OrderMode { ASC, DESC }
 
     // prevKey == null -> anchorPage is the first page.
     // nextKey == null -> anchorPage is the last page.
@@ -19,7 +24,9 @@ class DummyPagingSource(private val pageSize: Int) : PagingSource<Int, DummyData
             is LoadParams.Refresh -> 0
             else -> params.key ?: 0
         }
-        val page = pagedData.chunked(pageSize).getOrElse(pageNumber) { emptyList() }
+        val page = pagedData.sort(order = order)
+            .chunked(size = pageSize)
+            .getOrElse(index = pageNumber) { emptyList() }
 
         val nextPageNumber = if (page.isEmpty()) {
             null
@@ -35,4 +42,12 @@ class DummyPagingSource(private val pageSize: Int) : PagingSource<Int, DummyData
     } catch (e: Exception) {
         LoadResult.Error(throwable = e)
     }
+
+
+    private fun List<DummyData>.sort(order: OrderMode): List<DummyData> = when (order) {
+        OrderMode.ASC -> sortedBy { it.id }
+        OrderMode.DESC -> sortedByDescending { it.id }
+    }
 }
+
+

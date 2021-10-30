@@ -13,10 +13,26 @@ class MainViewModel : ViewModel() {
         const val PAGE_SIZE = 3
     }
 
-    private val dummyPagingSource = DummyPagingSource(pageSize = PAGE_SIZE)
+    private var order: DummyPagingSource.OrderMode = DummyPagingSource.OrderMode.ASC
 
-    fun getDummyData(): Flow<PagingData<DummyData>> =
-        Pager(PagingConfig(pageSize = PAGE_SIZE)) { dummyPagingSource }.flow
+    private lateinit var dummyPagingSource: DummyPagingSource
+
+    val dummyData: Flow<PagingData<DummyData>> = Pager(
+        PagingConfig(pageSize = PAGE_SIZE)
+    ) {
+        DummyPagingSource(
+            pageSize = PAGE_SIZE,
+            order = order
+        ).also { dummyPagingSource = it }
+    }.flow
+
+    fun reverse() {
+        order = when (order) {
+            DummyPagingSource.OrderMode.ASC -> DummyPagingSource.OrderMode.DESC
+            DummyPagingSource.OrderMode.DESC -> DummyPagingSource.OrderMode.ASC
+        }
+        dummyPagingSource.invalidate()
+    }
 }
 
 class MainViewModelFactory : ViewModelProvider.Factory {
