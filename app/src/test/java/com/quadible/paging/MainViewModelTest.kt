@@ -1,15 +1,18 @@
 package com.quadible.paging
 
-import app.cash.turbine.test
 import com.quadible.paging.MainViewModel.Companion.PAGE_SIZE
-import junit.framework.Assert.*
+import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.*
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import kotlin.math.ceil
+import kotlin.time.ExperimentalTime
 
 @ExperimentalCoroutinesApi
 class MainViewModelTest {
@@ -33,41 +36,27 @@ class MainViewModelTest {
         val viewModel = MainViewModel()
 
         // When
-        viewModel.dummyData.test {
-            // Then
-            // ceil because a page may contain les items than the page's size
-            val pages = ceil(pagedData.size.toDouble() / PAGE_SIZE).toInt()
+        viewModel.dummyData.testPages {
 
-            val testSnapshots = awaitItem().toTestSnapshots()
-            repeat(pages) {
-                assertEquals(
-                    pagedData.take(PAGE_SIZE * it),
-                    testSnapshots.atPoint(point = it)
-                )
-            }
+            // Then
+            awaitPages().assertOrdered()
         }
     }
 
+    @ExperimentalTime
     @Test
     fun `should reverse pages in batches`() = runBlockingTest {
         // Given
         val viewModel = MainViewModel()
 
         // When
-        viewModel.dummyData.test {
-            viewModel.reverse()
+        viewModel.dummyData.testPages {
 
             // Then
-            // ceil because a page may contain les items than the page's size
-            val pages = ceil(pagedData.size.toDouble() / PAGE_SIZE).toInt()
+            awaitPages().assertOrdered()
 
-            val testSnapshots = expectMostRecentItem().toTestSnapshots()
-            repeat(pages) {
-                assertEquals(
-                    pagedData.reversed().take(PAGE_SIZE * it),
-                    testSnapshots.atPoint(point = it)
-                )
-            }
+            viewModel.reverse()
+            awaitPages().assertReverseOrdered()
         }
     }
 
@@ -78,37 +67,36 @@ class MainViewModelTest {
             val viewModel = MainViewModel()
 
             // When
-            viewModel.dummyData.test {
+            viewModel.dummyData.testPages {
                 // Then
-                // ceil because a page may contain les items than the page's size
-                val pages = ceil(pagedData.size.toDouble() / PAGE_SIZE).toInt()
+                awaitPages().assertOrdered()
 
                 viewModel.reverse()
-                val testSnapshots1stReverse = expectMostRecentItem().toTestSnapshots()
-                repeat(pages) {
-                    assertEquals(
-                        pagedData.reversed().take(PAGE_SIZE * it),
-                        testSnapshots1stReverse.atPoint(point = it)
-                    )
-                }
+                awaitPages().assertReverseOrdered()
 
                 viewModel.reverse()
-                val testSnapshots2stReverse = awaitItem().toTestSnapshots()
-                repeat(pages) {
-                    assertEquals(
-                        pagedData.take(PAGE_SIZE * it),
-                        testSnapshots2stReverse.atPoint(point = it)
-                    )
-                }
+                awaitPages().assertOrdered()
 
                 viewModel.reverse()
-                val testSnapshots3stReverse = awaitItem().toTestSnapshots()
-                repeat(pages) {
-                    assertEquals(
-                        pagedData.reversed().take(PAGE_SIZE * it),
-                        testSnapshots3stReverse.atPoint(point = it)
-                    )
-                }
+                awaitPages().assertReverseOrdered()
             }
         }
+
+    private fun Pagination<DummyData>.assertOrdered() {
+        // ceil because a page may contain les items than the page's size
+        val pages = ceil(pagedData.size.toDouble() / PAGE_SIZE).toInt()
+
+        repeat(pages) {
+            assertEquals(pagedData.take(PAGE_SIZE * it), this.loadedAt(point = it))
+        }
+    }
+
+    private fun Pagination<DummyData>.assertReverseOrdered() {
+        // ceil because a page may contain les items than the page's size
+        val pages = ceil(pagedData.size.toDouble() / PAGE_SIZE).toInt()
+
+        repeat(pages) {
+            assertEquals(pagedData.reversed().take(PAGE_SIZE * it), this.loadedAt(point = it))
+        }
+    }
 }

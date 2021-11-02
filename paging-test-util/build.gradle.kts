@@ -34,5 +34,6 @@ android {
 dependencies {
     implementation("androidx.paging:paging-runtime-ktx:3.1.0-beta01")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2")
+    implementation("app.cash.turbine:turbine:0.7.0")
     implementation("junit:junit:4.13.2")
 }
