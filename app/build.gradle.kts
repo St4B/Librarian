@@ -1,6 +1,6 @@
 plugins {
-    id ("com.android.application")
-    id ("kotlin-android")
+    id("com.android.application")
+    id("kotlin-android")
 }
 
 apply(from = "../build.gradle.kts")
@@ -16,7 +16,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner ="androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
