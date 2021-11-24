@@ -5,5 +5,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "AssertPage"
+rootProject.name = "Librarian"
 include(":app", ":paging-test-util")
