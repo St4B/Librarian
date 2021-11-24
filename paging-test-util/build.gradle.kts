@@ -1,6 +1,8 @@
 plugins {
     id("com.android.library")
     id("kotlin-android")
+    id("org.jetbrains.dokka")
+    id("com.vanniktech.maven.publish")
 }
 
 android {
@@ -36,4 +38,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2")
     implementation("app.cash.turbine:turbine:0.7.0")
     implementation("junit:junit:4.13.2")
+}
+
+tasks.dokkaHtml.configure {
+    outputDirectory.set(buildDir.resolve("dokka"))
 }
