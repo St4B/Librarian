@@ -63,7 +63,7 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2")
     testImplementation("app.cash.turbine:turbine:0.7.0")
-    testImplementation("com.quadible:librarian:1.0.0")
+    testImplementation("com.quadible:librarian:1.0.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$compose_version")
