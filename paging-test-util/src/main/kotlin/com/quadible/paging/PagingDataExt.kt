@@ -121,5 +121,5 @@ data class Pagination<T : Any>(private val pages: MutableList<List<T>>) {
 
     fun loadedAt(point: Int): List<T> = pages.take(point).flatten()
 
-    fun fullyLoaded(): List<T> = pages.last()
+    fun fullyLoaded(): List<T> = pages.flatten()
 }
