@@ -113,9 +113,9 @@ data class Pagination<T : Any>(private val pages: MutableList<List<T>>) {
 
     val count: Int = pages.count()
 
-    fun first(): List<T> = pages[0]
+    fun first(): List<T> = pages.first()
 
-    fun last(): List<T> = pages[count - 1]
+    fun last(): List<T> = pages.last()
 
     fun pageAt(position: Int): List<T> = pages[position]
 
